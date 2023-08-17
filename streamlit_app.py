@@ -3,7 +3,6 @@ from get_response_func import get_response_url, get_response_single_prompt
 import ast
 import pandas as pd
 from text_extractor import WebpageTextExtractor
-# from streamlit_extras.stateful_button import button
 
 st.header("AI-BOARDING :scream_cat: :100:")
 

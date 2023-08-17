@@ -6,3 +6,5 @@ streamlit==1.25.0
 google-auth==1.35.0
 openai==0.27.7
 langid==1.1.6
+tiktoken==0.4.0
+bs4
