@@ -54,7 +54,7 @@ if st.session_state.mode == "Get response by URL":
         responses, questions = get_response_url(url, extracted_text)
 
         st.subheader(f"**URL:** {url}")
-
+        print("------responses: ", responses)
         merchant_name = responses[0]["company"]
         description = responses[1]["description"]
         industry = responses[2]["industry"]
