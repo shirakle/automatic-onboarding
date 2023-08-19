@@ -22,8 +22,8 @@ def trim_prompt(prompt):
         return trimmed_prompt
     return prompt
 
-def process_question(question):
-    # trim text since there is a maximum input limit of ~8000 tokens
+def process_question_vertax(question):
+    # trim prompt since there is a maximum input limit of ~8000 tokens
     trimmed_question = ' '.join(question.split()[:6000])
     model = TextGenerationModel.from_pretrained("text-bison@001")
     response = model.predict(
@@ -31,11 +31,11 @@ def process_question(question):
         temperature=0.3,
         max_output_tokens=1024,
     )
-    return response.text.strip().strip('`').replace("json", "").replace("\n", "")
+    return ast.literal_eval(response.text.strip().strip('`').replace("json", "").replace("\n", ""))
 
 def process_question_gpt(question):
+    # trim prompt since there is a maximum input limit of ~16000 tokens
     question["terms"] = trim_prompt(question["terms"])
-    print("-------terms: ", question["terms"])
 
     messages = [
         {"role": "system", "content": "You are a helpful assistant."},
@@ -48,7 +48,7 @@ def process_question_gpt(question):
     )
     output = chatbot_response.choices[0].message["content"]
 
-    return output.strip().strip('`').replace("json", "").replace("\n", "")
+    return ast.literal_eval(output.strip().strip('`').replace("json", "").replace("\n", ""))
 
 
 def get_response_single_prompt(prompt):
@@ -62,14 +62,10 @@ def get_response_single_prompt(prompt):
 
 def get_response_url(url, extracted_text):
 
-    print("secrets: ", st.secrets["connections"])
-    logging.info(st.secrets["connections"])
     # Create API client.
     credentials = service_account.Credentials.from_service_account_info(
         st.secrets["connections"]
     )
-    print("credentials: ", credentials)
-    logging.info(credentials)
     aiplatform.init(credentials=credentials)
     aiplatform.init(project='datascience-393713')
 
@@ -97,53 +93,54 @@ def get_response_url(url, extracted_text):
     get_email_address = f"`Review the following company website: {url}. What is their customer support email? " \
                         f"Return the answer in a json format of one line, with key='emailAddress' " \
                         f"and value='Your choice'"
-    get_terms_info = "`From the information in Terms of Service, answer the following three questions and return the " \
+    get_terms_info = "From the information in Terms of Service, answer the following three questions and return the " \
                      "answers in a json format: {'customer_support': answer_to_question_1, " \
                      "'cancellation': answer_to_question_2, 'refund_policy': answer_to_question_3}. " \
+                     "If the given information does not contain specific information about customer support replace " \
+                     "X with 'NULL'. " \
                      "1. What is the maximal timeframe mentioned " \
                      "per purchase for customer support? Summarize it and also provide the relevant paragraph " \
                      "from the Terms of Service and save it as quote. If there are any specific conditions for " \
-                   "it, mention them. Provide URL for the source you use for your answer. Return the answer " \
-                   "as a json in this format: {'timeframe': X, 'summary': X, 'quote': X , 'specificConditions': X, 'source': X} " \
-                     "If the given information does not contain specific information about customer support replace X with 'NULL'. " \
+                     "it, mention them. Provide URL for the source you use for your answer. Return the answer " \
+                     "as a json in this format: {'timeframe': X, 'summary': X, 'quote': X , 'specificConditions': X, 'source': X} " \
                      "2. What is the maximal timeframe mentioned per purchase for the cancellation policy? Summarize " \
                      "it and also provide the relevant quotes from the Terms of Service. If there are any specific " \
                      "conditions for it, mention them. Provide URL for the source you use for your answer. " \
-                     "Return the answer as a json in this format: {'timeframe': X, 'summary': X, 'quote': X , 'specificConditions': X, 'source': X}" \
-                    "If the given information does not contain specific information about cancellation policy replace X with 'NULL'. " \
+                     "Return the answer as a json in this format: {'timeframe': X, 'summary': X, 'quote': X , " \
+                     "'specificConditions': X, 'source': X}" \
                      "3. Quote directly from the terms of service and " \
-                    "return the refund policy of the company. return it as a json {'refundPolicy': X}. " \
-                     "If the given information does not contain specific information about refund policy replace X with 'NULL'."
-    get_customer_support = f"`From the information in Terms of Service, What is the maximal timeframe mentioned " \
-                           f"per purchase for customer support? Summarize it and also provide the relevant paragraph " \
-                           f"from the Terms of Service and save it as quote. If there are any specific conditions for " \
-                           f"it, mention them. Provide URL for the source you use for your answer. Return the answer " \
-                           f"in a json format of one line, with keys: ['timeframe', 'summary', 'quote' , " \
-                           f"'specificConditions', 'source'] and values ['DAYS', 'SUMMARY', 'PARAGRAPH', " \
-                           f"'SPECIFIC CONDITIONS', 'SOURCE']. If you do not have an answer to one of the options, " \
-                           f"write 'NULL'."
-    get_cancellation = f"`From the information in Terms of Service below, What is the maximal timeframe mentioned " \
-                       f"per purchase for the cancellation policy? Summarize it and also provide the relevant " \
-                       f"quotes from the Terms of Service. If there are any specific conditions for it, mention them. " \
-                       f"Provide URL for the source you use for your answer. Return the answer in a json format of " \
-                       f"one line, with keys: ['timeframe', 'summary', 'quote' , 'specificConditions', 'source'] " \
-                       f"and values ['DAYS', 'SUMMARY', 'QUOTE', 'SPECIFIC CONDITIONS', 'SOURCE']. " \
-                       f"If you do not have an answer to one of the options, write 'NULL'. "
-    get_refund_policy = f"From the information in Terms of Service, Quote directly from the terms of service and " \
-                        f"return the refund policy of the company. return it in a json format with key: 'refundPolicy' " \
-                        f"and value: 'your REFUND POLICY'"
+                     "return the refund policy of the company. return it as a string "
+    get_crypto_info = "From the information in Terms of Service, answer the following question. Does the platform use " \
+                      "blockchain to transfer the crypto or the crypto transfer is done on it’s own platform? " \
+                      "Return the answer as a json in this format: {'crypto_transfers': blockchain\internal system}"
+    get_delivery_and_liability = "From the information in Terms of Service, answer the following two questions and return the " \
+                           "answers in a json format: {'delivery_methods': answer_to_question_1, " \
+                           "'liability': answer_to_question_2}. " \
+                           "1. what delivery methods does the seller offer? Shipping, in store pickup or other? Return " \
+                           "the answer as a string." \
+                           "2. who takes liability on the following topics? Chargebacks (fraud transactions and " \
+                           "service), delivery issues and product quality? Return the answer as a json in this format: " \
+                           "{'Chargebacks': X, 'delivery_issues': X, 'quality': X}"
+
     terms = f"Terms of Service: '{extracted_text}'"
     questions_vertax = [get_merchant_name, get_description, get_industry, get_channels, get_billing, get_email_address]
-    get_terms_info = {"prompt":get_terms_info, "terms":terms}
+
+    questions_gpt = [{"prompt":get_terms_info, "terms":terms}, {"prompt": get_delivery_and_liability, "terms": terms}]
+    # Using ThreadPoolExecutor to parallelize the processing of questions
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        responses_vertax = list(executor.map(process_question_vertax, questions_vertax))
+
+    if responses_vertax[2]["industry"] == "Crypto":
+        questions_gpt.append({"prompt": get_crypto_info, "terms": terms})
 
     # Using ThreadPoolExecutor to parallelize the processing of questions
     with concurrent.futures.ThreadPoolExecutor() as executor:
-        responses_vertax = list(executor.map(process_question, questions_vertax))
+        responses_gpt = list(executor.map(process_question_gpt, questions_gpt))
+    # responses_gpt = process_question_gpt(get_terms_info)
 
-    responses_gpt = process_question_gpt(get_terms_info)
-
-    responses = responses_vertax + [responses_gpt]
-    questions = questions_vertax + [get_terms_info["prompt"]]
+    responses = responses_vertax + responses_gpt
+    questions = questions_vertax + [q["prompt"] for q in questions_gpt]
 
     return responses, questions
+
 
