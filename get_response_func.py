@@ -31,7 +31,7 @@ def process_question_vertax(question):
         temperature=0.3,
         max_output_tokens=1024,
     )
-    return ast.literal_eval("'''"+response.text+"'''".strip().strip('`').replace("json", "").replace("\n", ""))
+    return ast.literal_eval(response.text.strip().strip('`').replace("json", "").replace("\n", ""))
 
 def process_question_gpt(question):
     # trim prompt since there is a maximum input limit of ~16000 tokens
@@ -47,8 +47,8 @@ def process_question_gpt(question):
         messages=messages,
     )
     output = chatbot_response.choices[0].message["content"]
-
-    return ast.literal_eval("'''"+output+"'''".strip().strip('`').replace("json", "").replace("\n", ""))
+    print("output: ", output)
+    return ast.literal_eval(output.strip().strip('`').replace("json", "").replace("\n", ""))
 
 
 def get_response_single_prompt(prompt):
@@ -130,8 +130,6 @@ def get_response_url(url, extracted_text):
     with concurrent.futures.ThreadPoolExecutor() as executor:
         responses_vertax = list(executor.map(process_question_vertax, questions_vertax))
 
-    print("------- responses_vertax: ", responses_vertax)
-    print("------- responses_vertax[2]: ", responses_vertax[2])
     if responses_vertax[2]["industry"] == "Crypto":
         questions_gpt.append({"prompt": get_crypto_info, "terms": terms})
 
