@@ -31,7 +31,11 @@ def process_question_vertax(question):
         temperature=0.3,
         max_output_tokens=1024,
     )
-    return ast.literal_eval(response.text.strip().strip('`').replace("json", "").replace("\n", ""))
+    try:
+        formatted_response = ast.literal_eval(response.text.strip().strip('`').replace("json", "").replace("\n", ""))
+    except:
+        formatted_response = None
+    return formatted_response
 
 def process_question_gpt(question):
     # trim prompt since there is a maximum input limit of ~16000 tokens
@@ -48,7 +52,11 @@ def process_question_gpt(question):
     )
     output = chatbot_response.choices[0].message["content"]
     print("output: ", output)
-    return ast.literal_eval(output.strip().strip('`').replace("json", "").replace("\n", ""))
+    try:
+        formatted_response = ast.literal_eval(output.strip().strip('`').replace("json", "").replace("\n", ""))
+    except:
+        formatted_response = None
+    return formatted_response
 
 
 def get_response_single_prompt(prompt):

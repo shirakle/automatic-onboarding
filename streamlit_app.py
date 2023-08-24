@@ -55,21 +55,21 @@ if st.session_state.mode == "Get response by URL":
 
         st.subheader(f"**URL:** {url}")
         print("------responses: ", responses)
-        merchant_name = responses[0]["company"]
-        description = responses[1]["description"]
-        industry = responses[2]["industry"]
-        channels = responses[3]["channels"]
-        billings = responses[4]["billings"]
-        email_address = responses[5]["emailAddress"]
-        customer_support = responses[6]["customer_support"]
-        cancellation = responses[6]["cancellation"]
-        refund_policy = responses[6]["refund_policy"]
-        delivery_methods = responses[7]["delivery_methods"]
-        liability = responses[7]["liability"]
+        merchant_name = responses[0]["company"] if responses[0] is not None else "Information not found"
+        description = responses[1]["description"] if responses[1] is not None else "Information not found"
+        industry = responses[2]["industry"] if responses[2] is not None else "Information not found"
+        channels = responses[3]["channels"] if responses[3] is not None else "Information not found"
+        billings = responses[4]["billings"] if responses[4] is not None else "Information not found"
+        email_address = responses[5]["emailAddress"] if responses[5] is not None else "Information not found"
+        customer_support = responses[6]["customer_support"] if responses[6] is not None else "Information not found"
+        cancellation = responses[6]["cancellation"] if responses[6] is not None else "Information not found"
+        refund_policy = responses[6]["refund_policy"] if responses[6] is not None else "Information not found"
+        delivery_methods = responses[7]["delivery_methods"] if responses[7] is not None else "Information not found"
+        liability = responses[7]["liability"] if responses[7] is not None else "Information not found"
         if len(responses) == 9:
-            crypto_transfers = responses[8]["crypto_transfers"]
+            crypto_transfers = responses[8]["crypto_transfers"] if responses[8] is not None else "Information not found"
         else:
-            crypto_transfers = None
+            crypto_transfers = "Information not found"
 
         st.subheader("Merchant name")
         st.write(merchant_name)
@@ -90,7 +90,7 @@ if st.session_state.mode == "Get response by URL":
         st.write(email_address)
 
         st.subheader("customer_support")
-        if customer_support != "NULL":
+        if customer_support != "NULL" and customer_support != "Information not found":
             st.write(f"**timeframe:** {customer_support['timeframe']}")
             st.write(f"**summary:** {customer_support['summary']}")
             st.write(f"**quote:** {customer_support['quote']}")
@@ -99,9 +99,9 @@ if st.session_state.mode == "Get response by URL":
         else:
             st.write(f"Information not found")
 
-
+        print("-----customer_support: ", customer_support)
         st.subheader("cancellation")
-        if customer_support != "NULL":
+        if cancellation != "NULL" and cancellation != "Information not found":
             st.write(f"**timeframe:** {cancellation['timeframe']}")
             st.write(f"**summary:** {cancellation['summary']}")
             st.write(f"**quote:** {cancellation['quote']}")
@@ -111,7 +111,7 @@ if st.session_state.mode == "Get response by URL":
             st.write(f"Information not found")
 
         st.subheader("refund_policy")
-        if customer_support != "NULL":
+        if refund_policy != "NULL" and refund_policy != "Information not found":
             st.write(refund_policy)
         else:
             st.write(f"Information not found")
@@ -122,9 +122,8 @@ if st.session_state.mode == "Get response by URL":
         st.subheader("liability")
         st.write(liability)
 
-        if crypto_transfers is not None:
-            st.subheader("crypto_transfers")
-            st.write(crypto_transfers)
+        st.subheader("crypto_transfers")
+        st.write(crypto_transfers)
 
         st.divider()
         df = pd.DataFrame({"prompt": pd.Series(questions),
