@@ -48,7 +48,7 @@ def process_question_gpt(question):
     )
     output = chatbot_response.choices[0].message["content"]
 
-    return ast.literal_eval(output.replace("'", "\'").strip().strip('`').replace("json", "").replace("\n", ""))
+    return ast.literal_eval(output.replace("'", "\\'").strip().strip('`').replace("json", "").replace("\n", ""))
 
 
 def get_response_single_prompt(prompt):
