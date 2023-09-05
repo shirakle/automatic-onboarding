@@ -98,6 +98,7 @@ if st.session_state.mode == "Get response by URL":
             st.write(f"**source:** {customer_support['source']}")
         else:
             st.write(f"Information not found")
+            customer_support = "Information not found"
 
         st.subheader("cancellation")
         if cancellation != "NULL" and cancellation != "Information not found":
@@ -108,12 +109,14 @@ if st.session_state.mode == "Get response by URL":
             st.write(f"**source:** {cancellation['source']}")
         else:
             st.write(f"Information not found")
+            cancellation = "Information not found"
 
         st.subheader("refund_policy")
         if refund_policy != "NULL" and refund_policy != "Information not found":
             st.write(refund_policy)
         else:
             st.write(f"Information not found")
+            refund_policy = "Information not found"
 
         st.subheader("delivery_methods")
         st.write(delivery_methods)
