@@ -99,7 +99,6 @@ if st.session_state.mode == "Get response by URL":
         else:
             st.write(f"Information not found")
 
-        print("-----customer_support: ", customer_support)
         st.subheader("cancellation")
         if cancellation != "NULL" and cancellation != "Information not found":
             st.write(f"**timeframe:** {cancellation['timeframe']}")
@@ -126,8 +125,12 @@ if st.session_state.mode == "Get response by URL":
         st.write(crypto_transfers)
 
         st.divider()
-        df = pd.DataFrame({"prompt": pd.Series(questions),
-                           "response": pd.Series(responses),
+        df = pd.DataFrame({"question": pd.Series(["merchant_name", "description", "industry", "channels",
+                                                  "billings", "email_address", "customer_support", "cancellation",
+                                                  "refund_policy", "delivery_methods", "liability", "crypto_transfers"]),
+                           "response": pd.Series([merchant_name, description, industry, channels,
+                                                  billings, email_address, customer_support, cancellation,
+                                                  refund_policy, delivery_methods, liability, crypto_transfers]),
                            "like_or_dislike": None,
                            "comments": None,
                            "suggestion": None})
