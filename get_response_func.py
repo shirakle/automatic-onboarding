@@ -78,19 +78,6 @@ def process_question_gpt_using_search(question: str) -> str:
         formatted_response = None
     return formatted_response
 
-
-# def handle_list_responses(responses: List[str]) -> Union[List[str],str]:
-#     if len(responses) == 1:
-#         best_response = responses[0]
-#     elif len(responses) == 0:
-#         best_response = "Information not found"
-#     else:
-#         total_channels_responses = len(responses)
-#         merged_channels_responses = pd.Series(sum(responses, []))
-#         channels_freq = merged_channels_responses.value_counts()/total_channels_responses
-#         best_response = channels_freq[channels_freq >= 0.5].index.to_list()
-#     return best_response
-
 def aggregate_responses(responses: Union[List[Dict], List[str]], response_type: str) -> Union[Dict,str, List[str]]:
     if len(responses) == 1:
         best_response = responses[0]
@@ -112,27 +99,6 @@ def aggregate_responses(responses: Union[List[Dict], List[str]], response_type: 
             best_response = responses[longest_summary_index]
     return best_response
 
-# def handle_json_responses(responses: List[Dict]) -> Union[Dict,str]:
-#     if len(responses) == 1:
-#         best_response = responses[0]
-#     elif len(responses) == 0:
-#         best_response = "Information not found"
-#     else:
-#         summary_length = [len(response["summary"]) for response in responses]
-#         longest_summary_index = summary_length.index(max(summary_length))
-#         best_response = responses[longest_summary_index]
-#     return best_response
-#
-# def handle_str_responses(responses: List[str]) -> str:
-#     if len(responses) == 1:
-#         best_response = responses[0]
-#     elif len(responses) == 0:
-#         best_response = "Information not found"
-#     else:
-#         response_length = [len(response) for response in responses]
-#         longest_summary_index = response_length.index(max(response_length))
-#         best_response = responses[longest_summary_index]
-#     return best_response
 
 def choose_best_response(responses: List[List[Dict]]):
     best_responses = dict()
