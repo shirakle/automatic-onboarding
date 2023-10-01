@@ -10,19 +10,19 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
 
 
-@st.cache_resource
-def get_driver():
-    return webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+# @st.cache_resource
+# def get_driver(_options):
+#     return webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=_options)
 
-options = FirefoxOptions()
-options.add_argument("--headless")
-options.add_argument('--disable-blink-features=AutomationControlled')
-driver = webdriver.Firefox(options=options)
+# options = FirefoxOptions()
+# options.add_argument("--headless")
+# options.add_argument('--disable-blink-features=AutomationControlled')
+# driver = webdriver.Firefox(options=options)
 
 # options = Options()
 # options.add_argument("--headless")
 # options.add_argument("--disable-gpu")
-# driver = get_driver()
+# driver = get_driver(options)
 
 st.header("AI-BOARDING :scream_cat: :100:")
 
@@ -76,7 +76,7 @@ if st.session_state.mode == "Get response by URL":
             urls = convert_to_dict(additional_urls, url)
         else:
             # scrape start URLs for apify tool
-            urls, source = get_links(url, driver)
+            urls, source = get_links(url)
 
         responses, questions = get_questionnaire_responses(url, urls)
 
