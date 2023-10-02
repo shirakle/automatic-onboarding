@@ -3,16 +3,30 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from typing import Union, List, Dict
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.firefox.options import Options as FirefoxOptions
+# from selenium import webdriver
+# from selenium.webdriver.chrome.options import Options
+# from selenium.webdriver.chrome.service import Service
+# from webdriver_manager.chrome import ChromeDriverManager
+# from selenium.webdriver.firefox.options import Options as FirefoxOptions
 import streamlit as st
 
-@st.cache_resource
-def get_driver(_options):
-    return webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=_options)
+
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+
+options = Options()
+options.add_argument("--headless")
+options.add_argument("--no-sandbox")
+options.add_argument("--disable-dev-shm-usage")
+options.add_argument("--disable-gpu")
+options.add_argument("--disable-features=NetworkService")
+options.add_argument("--window-size=1920x1080")
+options.add_argument("--disable-features=VizDisplayCompositor")
+
+# @st.cache_resource
+# def get_driver(_options):
+#     return webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=_options)
 
 def filter_links(links_list: list[str]):
     word_list = ["terms", "refund", "cancel", "info", "about", "faq", "policy", "policies", "offerings"]
@@ -60,29 +74,28 @@ def get_links(website_link: str, driver = None) -> List:
     if len(list_links) > 0:
         list_links = filter_links(list_links)
 
-    # if len(list_links) == 0:
-    #     source="selenium"
-    #     options = Options()
-    #     options.add_argument("--headless")
-    #     options.add_argument("--disable-gpu")
-    #     driver = get_driver(options)
-    #     driver.get(website_link)
-    #     list_links = [element.get_attribute("href") for element in
-    #              driver.find_elements(By.CSS_SELECTOR, "a[href*=terms], a[href*=refund], a[href*=cancel], "
-    #                                                    "a[href*=info], a[href*=about], a[href*=faq], "
-    #                                                    "a[href*=policy], a[href*=policies], a[href*=offerings]")]
-    #     driver.quit()
-    #
-    # search_links = [link for link in list_links if "terms" in link or "polic" in link]
-    # for link in search_links:
-    #     options = Options()
-    #     options.add_argument("--headless")
-    #     options.add_argument("--disable-gpu")
-    #     driver = get_driver(options)
-    #     driver.get(link)
-    #     list_links = list_links + [element.get_attribute("href") for element in
-    #                   driver.find_elements(By.CSS_SELECTOR, "a[href*=refund], a[href*=cancel]")]
-    #     driver.quit()
+    if len(list_links) == 0:
+        source="selenium"
+        driver = webdriver.Chrome(options=options)
+        # driver = webdriver.Chrome()
+        # options = Options()
+        # options.add_argument("--headless")
+        # options.add_argument("--disable-gpu")
+        # driver = get_driver(options)
+        driver.get(website_link)
+        list_links = [element.get_attribute("href") for element in
+                 driver.find_elements(By.CSS_SELECTOR, "a[href*=terms], a[href*=refund], a[href*=cancel], "
+                                                       "a[href*=info], a[href*=about], a[href*=faq], "
+                                                       "a[href*=policy], a[href*=policies], a[href*=offerings]")]
+        driver.quit()
+
+    search_links = [link for link in list_links if "terms" in link or "polic" in link]
+    for link in search_links:
+        driver = webdriver.Chrome(options=options)
+        driver.get(link)
+        list_links = list_links + [element.get_attribute("href") for element in
+                      driver.find_elements(By.CSS_SELECTOR, "a[href*=refund], a[href*=cancel]")]
+        driver.quit()
 
     if len(list_links) > 0:
         # remove duplicates
