@@ -10,20 +10,6 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
 
 
-# @st.cache_resource
-# def get_driver(_options):
-#     return webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=_options)
-
-# options = FirefoxOptions()
-# options.add_argument("--headless")
-# options.add_argument('--disable-blink-features=AutomationControlled')
-# driver = webdriver.Firefox(options=options)
-
-# options = Options()
-# options.add_argument("--headless")
-# options.add_argument("--disable-gpu")
-# driver = get_driver(options)
-
 st.header("AI-BOARDING :scream_cat: :100:")
 
 st.radio(
@@ -47,15 +33,10 @@ if st.session_state.mode == "Get response by URL":
     st.text_input("URL", key="URL")
     st.markdown(
         "**The tool will automatically search for informative sub-URLS to scrape. For example: T&Cs, refund policy, about us etc.**")
-    # st.markdown(
-    #     "**Note: please provide a list of the informative URLS such as: T&Cs, refund policy, about us etc.** Seperete the links with a comma.")
-    # st.text_input("Additional URLs", key="additional_urls")
 
     # access the value
     url = st.session_state.URL
     additional_urls = None
-    # additional_urls = st.session_state.additional_urls.replace(" ", "").split(",")
-    # additional_urls = [i for i in additional_urls if i]
 
     st.markdown(
         """

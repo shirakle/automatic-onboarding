@@ -3,14 +3,7 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from typing import Union, List, Dict
-# from selenium import webdriver
-# from selenium.webdriver.chrome.options import Options
-# from selenium.webdriver.chrome.service import Service
-# from webdriver_manager.chrome import ChromeDriverManager
-# from selenium.webdriver.firefox.options import Options as FirefoxOptions
 import streamlit as st
-
-
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
@@ -23,10 +16,6 @@ options.add_argument("--disable-gpu")
 options.add_argument("--disable-features=NetworkService")
 options.add_argument("--window-size=1920x1080")
 options.add_argument("--disable-features=VizDisplayCompositor")
-
-# @st.cache_resource
-# def get_driver(_options):
-#     return webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=_options)
 
 def filter_links(links_list: list[str]):
     word_list = ["terms", "refund", "cancel", "info", "about", "faq", "policy", "policies", "offerings"]
@@ -44,7 +33,7 @@ def convert_to_dict(links_list: list[str], website_link):
     urls = [{"url": website_link}] + [{"url": string} for string in links_list]
     return urls
 
-def get_links(website_link: str, driver = None) -> List:
+def get_links(website_link: str) -> List:
     """
     get all sub-URLs in a given URL with maximum depth of 1
     :param website_link: parent URL
@@ -77,11 +66,6 @@ def get_links(website_link: str, driver = None) -> List:
     if len(list_links) == 0:
         source="selenium"
         driver = webdriver.Chrome(options=options)
-        # driver = webdriver.Chrome()
-        # options = Options()
-        # options.add_argument("--headless")
-        # options.add_argument("--disable-gpu")
-        # driver = get_driver(options)
         driver.get(website_link)
         list_links = [element.get_attribute("href") for element in
                  driver.find_elements(By.CSS_SELECTOR, "a[href*=terms], a[href*=refund], a[href*=cancel], "
