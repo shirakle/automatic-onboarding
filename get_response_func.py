@@ -120,13 +120,20 @@ def choose_best_response(responses: List[List[Dict]]):
     best_responses["offerings"] = responses[0][0]["offerings"]
 
     # channels, billing, email
-    channels_responses = [response["channels"] for response in responses[1] if response is not None and len(response["channels"])>0 and
-                          response["channels"] != "NULL" and isinstance(response["channels"], list) and response["channels"] is not None]
+    channels_responses = [response["channels"] for response in responses[1] if response is not None and
+                          "channels" in response.keys() and
+                          response["channels"] is not None and
+                          response["channels"] != "NULL" and
+                          len(response["channels"])>0 and
+                          isinstance(response["channels"], list)]
     best_responses["channels"] = aggregate_responses(responses=channels_responses, response_type="list")
 
-    billings_responses = [response["billings"] for response in responses[1] if response is not None and len(response["billings"]) > 0 and
-                          response["billings"] != "NULL" and isinstance(response["billings"], list) and response[
-                              "billings"] is not None]
+    billings_responses = [response["billings"] for response in responses[1] if response is not None and
+                          "billings" in response.keys() and
+                          response["billings"] is not None and
+                          response["billings"] != "NULL" and
+                          len(response["billings"]) > 0 and
+                           isinstance(response["billings"], list)]
     best_responses["billings"] = aggregate_responses(responses=billings_responses, response_type="list")
 
     # choose the most common email address
@@ -155,9 +162,9 @@ def choose_best_response(responses: List[List[Dict]]):
 
     delivery_methods_responses = [response["delivery_methods"] for response in responses[3] if response is not None and
                                   "delivery_methods" in response.keys() and
-                          len(response["delivery_methods"]) > 0 and
-                          response["delivery_methods"] != "NULL" and isinstance(response["delivery_methods"], list) and response[
-                              "delivery_methods"] is not None]
+                                  response["delivery_methods"] != "NULL" and
+                                  isinstance(response["delivery_methods"], list) and
+                                  response[ "delivery_methods"] is not None and len(response["delivery_methods"]) > 0]
     best_responses["delivery_methods"] = aggregate_responses(responses=delivery_methods_responses, response_type="list")
 
     liability_responses = [response["liability"] for response in responses[3] if response is not None and

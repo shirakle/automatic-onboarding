@@ -9,7 +9,6 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
 
-
 st.header("AI-BOARDING :scream_cat: :100:")
 
 st.radio(
@@ -55,83 +54,90 @@ if st.session_state.mode == "Get response by URL":
     )
     if st.button('GO!'):
 
-        if additional_urls is not None and len(additional_urls) > 0:
-            source = "user"
-            urls = convert_to_dict(additional_urls, url)
-        else:
-            # scrape start URLs for apify tool
-            urls, source = get_links(url)
+        with st.spinner('In progress..'):
 
-        responses, questions = get_questionnaire_responses(url, urls)
+            st.write("Looking for sub URLs...")
+            if additional_urls is not None and len(additional_urls) > 0:
+                source = "user"
+                urls = convert_to_dict(additional_urls, url)
+            else:
+                # scrape start URLs for apify tool
+                urls, source = get_links(url)
+            st.write(f"Found URLs to scrape: {[url_dict['url'] for url_dict in urls]}")
 
-        st.subheader(f"**URL:** {url}")
-        merchant_name = responses["merchant_name"]
-        description = responses["description"]
-        industry = responses["industry"]
-        channels = responses["channels"]
-        billings = responses["billings"]
-        email_address = responses["emailAddress"]
-        offerings = responses["offerings"]
-        cancellation = responses["cancellation"]
-        refund_policy = responses["refund_policy"]
-        delivery_methods = responses["delivery_methods"]
-        liability = responses["liability"]
+            st.write("Sending data to LLM...")
+            responses, questions = get_questionnaire_responses(url, urls)
 
-        st.subheader("Merchant name")
-        st.write(merchant_name)
+            st.success('Done', icon="✅")
 
-        st.subheader("Merchant description")
-        st.write(description)
+            st.subheader(f"**URL:** {url}")
+            merchant_name = responses["merchant_name"]
+            description = responses["description"]
+            industry = responses["industry"]
+            channels = responses["channels"]
+            billings = responses["billings"]
+            email_address = responses["emailAddress"]
+            offerings = responses["offerings"]
+            cancellation = responses["cancellation"]
+            refund_policy = responses["refund_policy"]
+            delivery_methods = responses["delivery_methods"]
+            liability = responses["liability"]
 
-        st.subheader("Industry")
-        st.write(industry)
+            st.subheader("Merchant name")
+            st.write(merchant_name)
 
-        st.subheader("channels")
-        st.write(channels)
+            st.subheader("Merchant description")
+            st.write(description)
 
-        st.subheader("billings")
-        st.write(billings)
+            st.subheader("Industry")
+            st.write(industry)
 
-        st.subheader("email_address")
-        st.write(email_address)
+            st.subheader("channels")
+            st.write(channels)
 
-        st.subheader("offerings")
-        st.write(offerings)
+            st.subheader("billings")
+            st.write(billings)
 
-        st.subheader("cancellation")
-        st.write(cancellation)
+            st.subheader("email_address")
+            st.write(email_address)
 
-        st.subheader("refund_policy")
-        st.write(refund_policy)
+            st.subheader("offerings")
+            st.write(offerings)
 
-        st.subheader("delivery_methods")
-        st.write(delivery_methods)
+            st.subheader("cancellation")
+            st.write(cancellation)
 
-        st.subheader("liability")
-        st.write(liability)
+            st.subheader("refund_policy")
+            st.write(refund_policy)
 
-        # st.subheader("crypto_transfers")
-        # st.write(crypto_transfers)
+            st.subheader("delivery_methods")
+            st.write(delivery_methods)
 
-        st.divider()
-        df = pd.DataFrame({"question": pd.Series(["merchant_name", "description", "industry", "channels",
-                                                  "billings", "email_address", "offerings", "cancellation",
-                                                  "refund_policy", "delivery_methods", "liability", "url", "additional_urls", "urls", "source"]),
-                           "response": pd.Series([merchant_name, description, industry, channels,
-                                                  billings, email_address, offerings, cancellation,
-                                                  refund_policy, delivery_methods, liability, url, additional_urls, urls, source]),
-                           "like_or_dislike": None,
-                           "comments": None,
-                           "suggestion": None})
+            st.subheader("liability")
+            st.write(liability)
 
-        st.download_button(
-            "Download as a CSV",
-            df.to_csv(index=False).encode('utf-8'),
-            "file.csv",
-            "text/csv",
-            key='download-csv'
-        )
-        st.dataframe(df)
+            # st.subheader("crypto_transfers")
+            # st.write(crypto_transfers)
+
+            st.divider()
+            df = pd.DataFrame({"question": pd.Series(["merchant_name", "description", "industry", "channels",
+                                                      "billings", "email_address", "offerings", "cancellation",
+                                                      "refund_policy", "delivery_methods", "liability", "url", "additional_urls", "urls", "source"]),
+                               "response": pd.Series([merchant_name, description, industry, channels,
+                                                      billings, email_address, offerings, cancellation,
+                                                      refund_policy, delivery_methods, liability, url, additional_urls, urls, source]),
+                               "like_or_dislike": None,
+                               "comments": None,
+                               "suggestion": None})
+
+            st.download_button(
+                "Download as a CSV",
+                df.to_csv(index=False).encode('utf-8'),
+                "file.csv",
+                "text/csv",
+                key='download-csv'
+            )
+            st.dataframe(df)
 
 
 if st.session_state.mode == "Try it yourself":
