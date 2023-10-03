@@ -268,7 +268,7 @@ def get_questionnaire_responses(url: str, urls: List[str] = None) -> [Dict, List
                                     f"'Physical Goods, Digital Goods, Software, In-Person Services, Personal Banking, Payment Facilitation, Investment Services, Accommodation, Top Up Services, Crypto Currencies, Gaming, Gambling, NFTs, Hotels, Car Rentals, Flights, Tickets.'. " \
                                     f"Based on the information on the website, what type of offerings does the " \
                                     f"company sell? Choose only the options that suits the provided company the most. You can " \
-                                    f"only use the options provided above, don't invent other options. Ecplain why did you choose each one of the options. Return the answer as a string."
+                                    f"only use the options provided above, don't invent other options. Explain why did you choose each one of the options. Return the answer as a string."
     get_channels_billing_email = f"From the information in this website, answer the following three questions and return the " \
                                  "answers in a json format: {'channels': answer_to_question_1, " \
                                  "'billings': answer_to_question_2, 'emailAddress': answer_to_question_3}. If the text " \
@@ -298,9 +298,10 @@ def get_questionnaire_responses(url: str, urls: List[str] = None) -> [Dict, List
     get_delivery_and_liability = f"From the information in this website, answer the following two questions and return the " \
                            "answers in a json format: {'delivery_methods': answer_to_question_1, " \
                            "'liability': answer_to_question_2}. " \
-                           "1. Based on the information on the website, If the merchant sell physical things, answer this question, if not - return NULL." \
+                           "1. Based on the information on the website, Does the merchant sell physical things? " \
+                                 "If the merchant doesn't sell physical things return ['Merchant doesn't sell physical goods']. If yes," \
                                  " what delivery methods does the seller offer? Shipping, in store pickup or other? " \
-                                 "Return the answer as a list of strings. If the merchant doesn't sell physical things return NULL." \
+                                 "Return the answer as a list of strings." \
                            "2. Based on the information on the website, who takes liability on the following topics? Chargebacks (fraud transactions and " \
                            "service), delivery issues and product quality? Return the answer as a json in this format: " \
                            "{'Chargebacks': X, 'delivery_issues': X, 'quality': X}. If this information is missing, replace X with NULL."
