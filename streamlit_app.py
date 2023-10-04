@@ -54,21 +54,22 @@ if st.session_state.mode == "Get response by URL":
     )
     if st.button('GO!'):
 
-        with st.spinner('In progress..'):
+        with st.spinner('Looking for sub URLs...'):
 
-            st.write("Looking for sub URLs...")
             if additional_urls is not None and len(additional_urls) > 0:
                 source = "user"
                 urls = convert_to_dict(additional_urls, url)
             else:
                 # scrape start URLs for apify tool
                 urls, source = get_links(url)
-            st.write(f"Found URLs to scrape: {[url_dict['url'] for url_dict in urls]}")
+            st.success('Finished URLs search', icon="✅")
+            st.write(f"URLs to scrape: {[url_dict['url'] for url_dict in urls]}")
 
-            st.write("Sending data to LLM...")
+
+        with st.spinner('Sending data to LLM...'):
             responses, questions = get_questionnaire_responses(url, urls)
 
-            st.success('Done', icon="✅")
+            st.success('Done!', icon="✅")
 
             st.subheader(f"**URL:** {url}")
             merchant_name = responses["merchant_name"]
