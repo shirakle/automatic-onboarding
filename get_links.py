@@ -18,7 +18,7 @@ options.add_argument("--window-size=1920x1080")
 options.add_argument("--disable-features=VizDisplayCompositor")
 
 def filter_links(links_list: list[str]):
-    word_list = ["terms", "refund", "cancel", "info", "about", "faq", "policy", "policies", "offerings"]
+    word_list = ["terms", "refund", "cancel", "info", "about", "faq", "policy", "policies", "offerings", "shipping"]
 
     # Function to check if a string contains any word from the word list
     def contains_word(string, word_list):

@@ -1,13 +1,13 @@
 import streamlit as st
-from get_response_func import get_questionnaire_responses, get_response_single_prompt
-import ast
+# from get_response_func import get_questionnaire_responses, get_response_single_prompt
 import pandas as pd
-from get_links import convert_to_dict, get_links
+from get_links import get_links
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
+from llm_responses_extractor import LlmResponsesExtractor#get_questionnaire_responses, get_response_single_prompt
 
 st.header("AI-BOARDING :scream_cat: :100:")
 
@@ -35,7 +35,6 @@ if st.session_state.mode == "Get response by URL":
 
     # access the value
     url = st.session_state.URL
-    additional_urls = None
 
     st.markdown(
         """
@@ -54,33 +53,30 @@ if st.session_state.mode == "Get response by URL":
     )
     if st.button('GO!'):
 
+        # sub URLs
         with st.spinner('Looking for sub URLs...'):
 
-            if additional_urls is not None and len(additional_urls) > 0:
-                source = "user"
-                urls = convert_to_dict(additional_urls, url)
-            else:
-                # scrape start URLs for apify tool
-                urls, source = get_links(url)
+            urls, source = get_links(url)
             st.success('Finished URLs search', icon="✅")
             st.write(f"URLs to scrape: {[url_dict['url'] for url_dict in urls]}")
 
-
+        # LLM
         with st.spinner('Sending data to LLM...'):
-            responses, questions = get_questionnaire_responses(url, urls)
+            responses = LlmResponsesExtractor.get_questionnaire_responses(url, urls)
 
             st.success('Done!', icon="✅")
 
             st.subheader(f"**URL:** {url}")
             merchant_name = responses["merchant_name"]
             description = responses["description"]
+            offerings = responses["offerings"]
             industry = responses["industry"]
             channels = responses["channels"]
             billings = responses["billings"]
             email_address = responses["emailAddress"]
-            offerings = responses["offerings"]
             cancellation = responses["cancellation"]
             refund_policy = responses["refund_policy"]
+            return_policy = responses["return_policy"]
             delivery_methods = responses["delivery_methods"]
             liability = responses["liability"]
 
@@ -111,22 +107,24 @@ if st.session_state.mode == "Get response by URL":
             st.subheader("refund_policy")
             st.write(refund_policy)
 
+            st.subheader("return_policy")
+            st.write(return_policy)
+
             st.subheader("delivery_methods")
             st.write(delivery_methods)
 
             st.subheader("liability")
             st.write(liability)
 
-            # st.subheader("crypto_transfers")
-            # st.write(crypto_transfers)
-
             st.divider()
             df = pd.DataFrame({"question": pd.Series(["merchant_name", "description", "industry", "channels",
                                                       "billings", "email_address", "offerings", "cancellation",
-                                                      "refund_policy", "delivery_methods", "liability", "url", "additional_urls", "urls", "source"]),
+                                                      "refund_policy", "return_policy", "delivery_methods",
+                                                      "liability", "url", "urls", "source"]),
                                "response": pd.Series([merchant_name, description, industry, channels,
                                                       billings, email_address, offerings, cancellation,
-                                                      refund_policy, delivery_methods, liability, url, additional_urls, urls, source]),
+                                                      refund_policy, return_policy, delivery_methods, liability, url,
+                                                    urls, source]),
                                "like_or_dislike": None,
                                "comments": None,
                                "suggestion": None})
@@ -160,7 +158,7 @@ if st.session_state.mode == "Try it yourself":
             unsafe_allow_html=True
         )
     if st.button('Try it yourself!'):
-        single_response = get_response_single_prompt(st.session_state.prompt)
+        single_response = LlmResponsesExtractor.get_response_single_prompt(st.session_state.prompt)
         st.write(f"**prompt**")
         st.write(st.session_state.prompt)
         st.write(f"**response**")
