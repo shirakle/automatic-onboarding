@@ -3,24 +3,24 @@ from dataclasses import dataclass
 
 @dataclass(frozen=True)
 class QuestionnairePrompts:
-    NAME_DESC_INDUSTRY_OFFERINGS: str = "From the information in this website, answer the following four questions and return a json in the following format: " \
+    DESCRIPTION: str = "From the information in this website, answer the following three questions and return a json in the following format: " \
                                         "{'company': answer_to_question_1, " \
                                         "'description': answer_to_question_2, " \
-                                        "'industry': answer_to_question_3, " \
-                                        "'offerings': answer_to_question_4}. " \
+                                        "'long_description': answer_to_question_3}. " \
                                         "1. Search the company name. Return the answer as a string. " \
                                         "2. Describe the company in up to five sentences, and no less than three " \
                                         "sentences. Focus on what they do as a company, and what services they offer. " \
                                         "Be neutral and descriptive. Return the answer as a string " \
-                                        "3. See this list of one-word industry descriptions: " \
-                                        "'Retail, Financial Services, Travel, Gaming, Crypto, Software Subscription, Gambling, Ticketing, Delivery'. " \
-                                        "Choose one description that suits the provided company the most. You can " \
-                                        "only use the options provided above, don't invent other options. Return the answer as a string." \
-                                        "4. See this list of offerings descriptions: " \
-                                        "'Physical Goods, Digital Goods, Software, In-Person Services, Personal Banking, Payment Facilitation, Investment Services, Accommodation, Top Up Services, Crypto Currencies, Gaming, Gambling, NFTs, Hotels, Car Rentals, Flights, Tickets'. " \
-                                        "What type of offerings does the company sell? Choose only the options that " \
-                                        "suits the provided company the most. You can only use the options provided " \
-                                        "above, don't invent other options. You can also use your previous knowledge to answer this question. Return the answer as a string."
+                                        "3.Describe the company in a few sentences. Describe in details what does the company sell\offer."
+    OFFERINGS: str = "See this list of offerings descriptions: " \
+                     "'Physical Goods, Digital Goods, Software, In-Person Services, Personal Banking, Payment Facilitation, Investment Services, Accommodation, Top Up Services, Crypto Currencies, Gaming, Gambling, NFTs, Hotels, Car Rentals, Flights, Tickets'. " \
+                     "Choose only the options that " \
+                     "suits the provided company the most based on the company description. You can only use the options provided " \
+                     "above, don't invent other options. Return a json in the following format: {'offerings': [OFFERING_A, OFFERING_B]}."
+    INDUSTRY: str = "See this list of one-word industry descriptions: " \
+                    "'Retail, Financial Services, Travel, Gaming, Crypto, Software Subscription, Gambling, Ticketing, Delivery'. " \
+                    "Choose one description that suits the provided company the most based on the company description. You can " \
+                    "only use the options provided above, don't invent other options. Return a json in the following format: {'industry': INDUSTRY}."
     CHANNELS_BILLINGS_DELIVERY_EMAIL: str = "From the information in this website, answer the following four questions and return the answers in a json format: " \
                                             "{'channels': answer_to_question_1, " \
                                             "'billings': answer_to_question_2, " \

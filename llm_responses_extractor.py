@@ -6,6 +6,7 @@ import streamlit as st
 from apify_client import ApifyClient
 from typing import Union, List, Dict
 import ast
+import openai
 
 from constants import QuestionnairePrompts
 from responses_processor import ResponsesProcessor
@@ -35,8 +36,23 @@ class LlmResponsesExtractor:
         return response.text
 
     @staticmethod
+    def get_response_gpt(prompt):
+        openai.api_key = st.secrets["openai"]["api_key"]
+        messages = [
+            {"role": "system", "content": "You are an assistant that helps to choose the best options based on a company description."},
+            {"role": "user", "content": prompt},
+        ]
+        chatbot_response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            temperature=0,
+            messages=messages,
+        )
+        output = chatbot_response.choices[0].message["content"]
+        return output
+
+    @staticmethod
     def get_response_single_prompt(prompt):
-        return process_question_vertax(prompt)
+        return LlmResponsesExtractor.get_response_vertax(prompt)
 
     @staticmethod
     def process_question_apify(question):
@@ -93,7 +109,7 @@ class LlmResponsesExtractor:
     @staticmethod
     def get_questionnaire_responses(url: str, urls: List[str] = None) -> List[Dict]:
 
-        llm_prompts = [{"prompt": QuestionnairePrompts.NAME_DESC_INDUSTRY_OFFERINGS, "urls": [{"url": url}]},
+        llm_prompts = [{"prompt": QuestionnairePrompts.DESCRIPTION, "urls": [{"url": url}]},
                          {"prompt": QuestionnairePrompts.CHANNELS_BILLINGS_DELIVERY_EMAIL, "urls": urls},
                          {"prompt": QuestionnairePrompts.POLICIES, "urls": urls},
                          {"prompt": QuestionnairePrompts.LIABILITY, "urls": urls}]
@@ -102,7 +118,16 @@ class LlmResponsesExtractor:
         with concurrent.futures.ThreadPoolExecutor() as executor:
             responses_gpt = list(executor.map(LlmResponsesExtractor.process_question_apify, llm_prompts))
 
+        if responses_gpt[0][0] is not None:
+            merchant_description = responses_gpt[0][0]["long_description"]
+            industry_prompt = merchant_description + " " + QuestionnairePrompts.INDUSTRY
+            offerings_prompt = merchant_description + " " + QuestionnairePrompts.OFFERINGS
+
+            responses_gpt = responses_gpt + [ast.literal_eval(LlmResponsesExtractor.get_response_gpt(industry_prompt))]
+            responses_gpt = responses_gpt + [ast.literal_eval(LlmResponsesExtractor.get_response_gpt(offerings_prompt))]
+
         print("Full responses: ", responses_gpt)
+        # responses = responses_gpt
         processed_responses_gpt = ResponsesProcessor.process_llm_responses(responses_gpt)
         print("------------------------------------------------------------------------------------------------------")
         print("Processed responses: ", processed_responses_gpt)

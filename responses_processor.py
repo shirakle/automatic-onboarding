@@ -40,8 +40,8 @@ class ResponsesProcessor:
         # company name, description, industry, offerings
         best_responses["merchant_name"] = responses[0][0]["company"]
         best_responses["description"] = responses[0][0]["description"]
-        best_responses["industry"] = responses[0][0]["industry"]
-        best_responses["offerings"] = responses[0][0]["offerings"]
+        best_responses["industry"] = responses[4]["industry"] if len(responses)>4 else None
+        best_responses["offerings"] = responses[5]["offerings"] if len(responses)>4 else None
 
         # channels - choose the most common options
         channels_responses = [response["channels"] for response in responses[1] if response is not None and
