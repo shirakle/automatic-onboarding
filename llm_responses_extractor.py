@@ -108,7 +108,6 @@ class LlmResponsesExtractor:
 
     @staticmethod
     def get_questionnaire_responses(url: str, urls: List[str] = None) -> List[Dict]:
-
         llm_prompts = [{"prompt": QuestionnairePrompts.DESCRIPTION, "urls": [{"url": url}]},
                          {"prompt": QuestionnairePrompts.CHANNELS_BILLINGS_DELIVERY_EMAIL, "urls": urls},
                          {"prompt": QuestionnairePrompts.POLICIES, "urls": urls},

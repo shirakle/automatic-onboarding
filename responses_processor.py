@@ -1,6 +1,9 @@
 from typing import Union, List, Dict
 import pandas as pd
 
+import constants
+from constants import  ResponseCategories
+
 
 class ResponsesProcessor:
 
@@ -33,6 +36,10 @@ class ResponsesProcessor:
         return best_response
 
     @staticmethod
+    def clean_categories(categories_response: List[str], categories_to_keep: List[str]):
+        return [cat for cat in categories_response if cat.lower() in categories_to_keep]
+
+    @staticmethod
     def process_llm_responses(responses: List[List[Dict]]):
 
         best_responses = dict()
@@ -42,6 +49,12 @@ class ResponsesProcessor:
         best_responses["description"] = responses[0][0]["description"]
         best_responses["industry"] = responses[4]["industry"] if len(responses)>4 else None
         best_responses["offerings"] = responses[5]["offerings"] if len(responses)>4 else None
+
+        # # clean_categories
+        # best_responses["industry"] = ResponsesProcessor.clean_categories(categories_response=best_responses["industry"],
+        #                                               categories_to_keep=ResponseCategories().INDUSTRY)
+        # best_responses["offerings"] = ResponsesProcessor.clean_categories(categories_response=best_responses["offerings"],
+        #                  categories_to_keep=ResponseCategories().OFFERINGS)
 
         # channels - choose the most common options
         channels_responses = [response["channels"] for response in responses[1] if response is not None and

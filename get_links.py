@@ -69,7 +69,7 @@ def get_links(website_link: str) -> List:
         driver.get(website_link)
         list_links = [element.get_attribute("href") for element in
                  driver.find_elements(By.CSS_SELECTOR, "a[href*=terms], a[href*=refund], a[href*=cancel], "
-                                                       "a[href*=info], a[href*=about], a[href*=faq], "
+                                                       "a[href*=about], a[href*=faq], "
                                                        "a[href*=policy], a[href*=policies], a[href*=offerings]")]
         driver.quit()
 
