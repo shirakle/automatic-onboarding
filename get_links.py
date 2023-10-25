@@ -85,5 +85,9 @@ def get_links(website_link: str) -> List:
         # remove duplicates
         list_links = list(set(list_links))
 
+    if len(list_links) > 10:
+        list_links = [link for link in list_links if
+               ("terms" in link) or ("refund" in link) or ("return" in link) or ("polic" in link)]
+
     links = convert_to_dict(list_links, website_link)
     return links, source
