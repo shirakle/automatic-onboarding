@@ -78,7 +78,7 @@ def get_links(website_link: str) -> List:
         driver = webdriver.Chrome(options=options)
         driver.get(link)
         list_links = list_links + [element.get_attribute("href") for element in
-                      driver.find_elements(By.CSS_SELECTOR, "a[href*=refund], a[href*=cancel]")]
+                      driver.find_elements(By.CSS_SELECTOR, "a[href*=refund], a[href*=cancel], a[href*=return]")]
         driver.quit()
 
     if len(list_links) > 0:

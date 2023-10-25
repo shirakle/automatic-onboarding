@@ -14,7 +14,7 @@ class QuestionnairePrompts:
                        '3.Describe the company in a few sentences. Describe in details what does the company sell\offer.'
     OFFERINGS: str = 'See this list of offerings descriptions: ' \
                      '"Physical Goods, Digital Goods, Software, In-Person Services, Personal Banking, Payment Facilitation, Investment Services, Accommodation, Top Up Services, Crypto Currencies, Gaming, Gambling, NFTs, Hotels, Car Rentals, Flights, Tickets". ' \
-                     'Choose only the options that ' \
+                     'Choose only the primary offerings that ' \
                      'suits the provided company the most based on the company description. You can only use the options provided ' \
                      'above, dont invent other options. Return a json in the following format: {offerings: [OFFERING_A, OFFERING_B]}.'
     INDUSTRY: str = 'See this list of one-word industry descriptions: ' \

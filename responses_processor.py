@@ -50,6 +50,9 @@ class ResponsesProcessor:
         best_responses["industry"] = responses[4]["industry"] if len(responses)>4 else None
         best_responses["offerings"] = responses[5]["offerings"] if len(responses)>4 else None
 
+        print("---- offerings: ", best_responses["offerings"])
+        print("---- offerings type: ", type(best_responses["offerings"]))
+
         # # clean_categories
         # best_responses["industry"] = ResponsesProcessor.clean_categories(categories_response=best_responses["industry"],
         #                                               categories_to_keep=ResponseCategories().INDUSTRY)
@@ -82,7 +85,7 @@ class ResponsesProcessor:
                                       response["delivery_methods"] is not None and
                                       len(response["delivery_methods"]) > 0]
         best_responses["delivery_methods"] = ResponsesProcessor.aggregate_responses(responses=delivery_methods_responses, response_type="list")
-        if "Merchant doesn't sell physical goods" in best_responses["delivery_methods"]:
+        if "Merchant doesn't sell physical goods" in best_responses["delivery_methods"] or "Physical Goods" not in best_responses["offerings"]:
             best_responses["delivery_methods"] = "Merchant doesn't sell physical goods"
 
         # Email address - choose the most common
@@ -91,7 +94,13 @@ class ResponsesProcessor:
         if len(email_responses) == 0:
             best_responses["emailAddress"] = "Information not found"
         else:
-            best_responses["emailAddress"] = pd.Series(email_responses).value_counts().index[0]
+            # present all emails that contain the word support
+            support_emails = [email for email in pd.Series(email_responses).unique() if "support" in email]
+            if len(support_emails)>0:
+                best_responses["emailAddress"] = support_emails
+            else:
+                # present all emails
+                best_responses["emailAddress"] = pd.Series(email_responses).unique()
 
         # cancellation
         cancellation_responses = [response["cancellation"] for response in responses[2] if response is not None and
